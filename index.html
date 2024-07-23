@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veranstaltungsauskunft - Verwaltung</title>
+    <style>
+        @font-face {
+            font-family: 'Cera Pro';
+            src: url('https://fonts.cdnfonts.com/s/29719/CeraPro-Regular.woff') format('woff'),
+                 url('https://fonts.cdnfonts.com/s/29719/CeraPro-Regular.woff2') format('woff2');
+        }
+        body {
+            font-family: 'Cera Pro', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #699f3f;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            display: block;
+            font-weight: bold;
+        }
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        form textarea {
+            height: 100px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #699f3f;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #567d31;
+        }
+        .info {
+            background-color: #699f3f;
+            color: #fff;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 1.8em;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            max-height: 100px;
+            visibility: visible;
+        }
+        .info .material-symbols-outlined {
+            font-size: 40px;
+        }
+        .info .feedback-icon {
+            margin-right: auto;
+        }
+        .info .volume-icon {
+            display: none;
+        }
+        .info.audio-playing .volume-icon {
+            display: inline-block;
+            margin-left: auto;
+        }
+        .canceled {
+            color: red;
+            font-weight: bold;
+        }
+        .icon-preview {
+            display: flex;
+            align-items: center;
+        }
+        .icon-preview .material-symbols-outlined {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+        #search {
+            width: 300px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Veranstaltungsauskunft - Verwaltung</h1>
+        
+        <div class="info" id="info-box">
+            <span class="material-symbols-outlined feedback-icon" id="feedback-icon">feedback</span>
+            <span id="info-message">Begegnungsraum gesperrt: Veranstaltungen fallen aus oder werden verlegt! - Veranstaltungsauskunft beachten!</span>
+            <span class="material-symbols-outlined volume-icon">volume_up</span>
+        </div>
+        
+        <h2>Infobereich bearbeiten</h2>
+        <form id="infoForm">
+            <div id="infoContainer">
+                <div class="infoEntry">
+                    <label for="infoText">Infotext:</label>
+                    <textarea id="infoText" name="infoText[]" required>Begegnungsraum gesperrt: Veranstaltungen fallen aus oder werden verlegt! - Veranstaltungsauskunft beachten!</textarea>
+                    <label for="infoIcon">Icon:</label>
+                    <select id="infoIcon" name="infoIcon[]" required>
+                        <option value="feedback" class="icon-preview"><span class="material-symbols-outlined">feedback</span> Feedback</option>
+                        <option value="info" class="icon-preview"><span class="material-symbols-outlined">info</span> Info</option>
+                        <option value="warning" class="icon-preview"><span class="material-symbols-outlined">warning</span> Warnung</option>
+                        <option value="campaign" class="icon-preview"><span class="material-symbols-outlined">campaign</span> Ankündigung</option>
+                        <option value="error" class="icon-preview"><span class="material-symbols-outlined">error</span> Fehler</option>
+                        <option value="event" class="icon-preview"><span class="material-symbols-outlined">event</span> Ereignis</option>
+                        <option value="help" class="icon-preview"><span class="material-symbols-outlined">help</span> Hilfe</option>
+                        <option value="visibility" class="icon-preview"><span class="material-symbols-outlined">visibility</span> Sichtbarkeit</option>
+                        <option value="check_circle" class="icon-preview"><span class="material-symbols-outlined">check_circle</span> Abgehakt</option>
+                        <option value="announcement" class="icon-preview"><span class="material-symbols-outlined">announcement</span> Ankündigung</option>
+                        <option value="block" class="icon-preview"><span class="material-symbols-outlined">block</span> Blockieren</option>
+                        <option value="notifications" class="icon-preview"><span class="material-symbols-outlined">notifications</span> Benachrichtigungen</option>
+                        <option value="visibility_off" class="icon-preview"><span class="material-symbols-outlined">visibility_off</span> Unsichtbar</option>
+                        <option value="report_problem" class="icon-preview"><span class="material-symbols-outlined">report_problem</span> Problem</option>
+                        <option value="announcement" class="icon-preview"><span class="material-symbols-outlined">announcement</span> Ankündigung</option>
+                        <option value="done" class="icon-preview"><span class="material-symbols-outlined">done</span> Fertig</option>
+                        <option value="event_available" class="icon-preview"><span class="material-symbols-outlined">event_available</span> Verfügbares Ereignis</option>
+                        <option value="event_busy" class="icon-preview"><span class="material-symbols-outlined">event_busy</span> Belegtes Ereignis</option>
+                    </select>
+                    <span class="material-symbols-outlined" id="iconPreview">feedback</span>
+                    <label for="infoWechselzeit">Wechselzeit (Sekunden):</label>
+                    <input type="number" id="infoWechselzeit" name="infoWechselzeit[]" value="10" required>
+                    <button type="button" class="button" onclick="removeInfo(this)">Infotext entfernen</button>
+                </div>
+            </div>
+            <button type="button" class="button" onclick="addInfo()">Infotext hinzufügen</button>
+            <div>
+                <button type="submit" class="button">Speichern</button>
+            </div>
+        </form>
+        
+        <h2>Audioverwaltung</h2>
+        <form id="audioForm">
+            <div>
+                <label for="audioUrl">Audio URL:</label>
+                <input type="url" id="audioUrl" name="audioUrl" value="https://ttsdemo.voicereader.org/VoiceReaderServer22DemoService/Files/bf92b69b-e879-44f6-96c9-349538d14c4e.mp3" required>
+            </div>
+            <div>
+                <label for="audioRepeatTime">Wiederholungszeit (Sekunden):</label>
+                <input type="number" id="audioRepeatTime" name="audioRepeatTime" value="35" required>
+            </div>
+            <div>
+                <button type="submit" class="button">Speichern</button>
+            </div>
+        </form>
+
+        <h2>Neue Veranstaltung hinzufügen</h2>
+        <form id="veranstaltungForm">
+            <div>
+                <label for="titel">Titel:</label>
+                <input type="text" id="titel" name="titel" required>
+            </div>
+            <div>
+                <label for="raum">Raum:</label>
+                <input type="text" id="raum" name="raum" required>
+            </div>
+            <div>
+                <label for="startZeit">Startzeit (HH:MM):</label>
+                <input type="time" id="startZeit" name="startZeit" required>
+            </div>
+            <div>
+                <label for="endeZeit">Endzeit (HH:MM):</label>
+                <input type="time" id="endeZeit" name="endeZeit" required>
+            </div>
+            <div>
+                <label for="einzelDatum">Datum der Einzelveranstaltung:</label>
+                <input type="date" id="einzelDatum" name="einzelDatum">
+            </div>
+            <div>
+                <label for="wochentag">Wochentag für wiederholende Veranstaltung:</label>
+                <select id="wochentag" name="wochentag">
+                    <option value="">Keine</option>
+                    <option value="Sonntag">Sonntag</option>
+                    <option value="Montag">Montag</option>
+                    <option value="Dienstag">Dienstag</option>
+                    <option value="Mittwoch">Mittwoch</option>
+                    <option value="Donnerstag">Donnerstag</option>
+                    <option value="Freitag">Freitag</option>
+                    <option value="Samstag">Samstag</option>
+                </select>
+            </div>
+            <div>
+                <label for="startDatum">Startdatum für mehrtägige Veranstaltung:</label>
+                <input type="date" id="startDatum" name="startDatum">
+            </div>
+            <div>
+                <label for="endeDatum">Enddatum für mehrtägige Veranstaltung:</label>
+                <input type="date" id="endeDatum" name="endeDatum">
+            </div>
+            <div id="lauftextContainer">
+                <div class="lauftextEntry">
+                    <label for="lauftext">Lauftext:</label>
+                    <textarea id="lauftext" name="lauftext[]"></textarea>
+                    <label for="lauftextTyp">Lauftext-Typ:</label>
+                    <select id="lauftextTyp" name="lauftextTyp[]">
+                        <option value="positiv">Positiv</option>
+                        <option value="negativ">Negativ</option>
+                    </select>
+                    <label for="lauftextStartDatum">Lauftext Start Datum:</label>
+                    <input type="date" id="lauftextStartDatum" name="lauftextStartDatum[]">
+                    <label for="lauftextEndeDatum">Lauftext Ende Datum:</label>
+                    <input type="date" id="lauftextEndeDatum" name="lauftextEndeDatum[]">
+                    <button type="button" class="button" onclick="removeLauftext(this)">Lauftext entfernen</button>
+                </div>
+            </div>
+            <button type="button" class="button" onclick="addLauftext()">Lauftext hinzufügen</button>
+            <div>
+                <input type="checkbox" id="canceled" name="canceled">
+                <label for="canceled">Veranstaltung entfällt</label>
+            </div>
+            <div>
+                <label for="ausblendung">Ausblendungstext (alle Veranstaltungen):</label>
+                <textarea id="ausblendung" name="ausblendung"></textarea>
+            </div>
+            <div>
+                <button type="submit" class="button">Hinzufügen</button>
+            </div>
+        </form>
+        
+        <h2>Veranstaltung entfällt bearbeiten</h2>
+        <form id="canceledForm">
+            <div>
+                <label for="canceledVeranstaltung">Veranstaltung:</label>
+                <select id="canceledVeranstaltung" name="canceledVeranstaltung[]" multiple>
+                    <!-- Dynamisch generierte Optionen -->
+                </select>
+            </div>
+            <div id="canceledDatenContainer">
+                <div class="canceledDatumEntry">
+                    <label for="canceledDatum">Datum:</label>
+                    <input type="date" id="canceledDatum" name="canceledDatum[]">
+                    <button type="button" class="button" onclick="removeCanceledDatum(this)">Datum entfernen</button>
+                </div>
+            </div>
+            <button type="button" class="button" onclick="addCanceledDatum()">Datum hinzufügen</button>
+            <div>
+                <label for="canceledVorlage">Vorlage:</label>
+                <select id="canceledVorlage" name="canceledVorlage" onchange="showVorlageText()">
+                    <option value="">Keine Vorlage</option>
+                    <option value="Keine Verspätungsbegründung">Keine Verspätungsbegründung</option>
+                    <option value="Nähere Informationen in Kürze">Nähere Informationen in Kürze</option>
+                    <option value="Grund: Technische Störung">Grund: Technische Störung</option>
+                    <option value="Grund: Kurzfristiger Mitarbeiterausfall">Grund: Kurzfristiger Mitarbeiterausfall</option>
+                    <option value="Grund: Kurzfristige Erkrankung von Mitarbeitern">Grund: Kurzfristige Erkrankung von Mitarbeitern</option>
+                    <option value="Grund: Behördliche Maßnahme">Grund: Behördliche Maßnahme</option>
+                    <option value="Grund: Polizeieinsatz">Grund: Polizeieinsatz</option>
+                    <option value="Grund: Feuerwehreinsatz">Grund: Feuerwehreinsatz</option>
+                    <option value="Grund: Streik">Grund: Streik</option>
+                    <option value="Grund: Streikauswirkungen">Grund: Streikauswirkungen</option>
+                    <option value="Grund: Unwetter">Grund: Unwetter</option>
+                    <option value="Grund: Unwetterauswirkungen">Grund: Unwetterauswirkungen</option>
+                    <option value="Grund: Schnee und Eis">Grund: Schnee und Eis</option>
+                    <option value="Grund: Erdrutsch">Grund: Erdrutsch</option>
+                    <option value="Grund: Hochwasser">Grund: Hochwasser</option>
+                    <option value="Grund: Bauarbeiten">Grund: Bauarbeiten</option>
+                    <option value="Grund: Raumsperrung">Grund: Raumsperrung</option>
+                    <option value="Grund: Reparatur am Raum">Grund: Reparatur am Raum</option>
+                    <option value="Grund: Technischer Defekt">Grund: Technischer Defekt</option>
+                    <option value="Grund: Entschärfung einer Fliegerbombe">Grund: Entschärfung einer Fliegerbombe</option>
+                </select>
+                <p id="vorlageText"></p>
+            </div>
+            <div>
+                <label for="canceledLauftext">Individueller Lauftext:</label>
+                <textarea id="canceledLauftext" name="canceledLauftext"></textarea>
+            </div>
+            <div>
+                <button type="submit" class="button">Speichern</button>
+                <button type="button" class="button" onclick="removeCanceled()">Löschen</button>
+            </div>
+        </form>
+
+        <h2>Verspätungen bearbeiten</h2>
+        <form id="verspaetungForm">
+            <div>
+                <label for="verspaetungVeranstaltung">Veranstaltung:</label>
+                <select id="verspaetungVeranstaltung" name="verspaetungVeranstaltung[]" multiple>
+                    <!-- Dynamisch generierte Optionen -->
+                </select>
+            </div>
+            <div id="verspaetungDatenContainer">
+                <div class="verspaetungDatumEntry">
+                    <label for="verspaetungDatum">Datum:</label>
+                    <input type="date" id="verspaetungDatum" name="verspaetungDatum[]">
+                    <label for="verspaetungszeit">Verspätungszeit (Minuten):</label>
+                    <input type="number" id="verspaetungszeit" name="verspaetungszeit[]" value="0">
+                    <label for="verspaetungsgrund">Verspätungsgrund:</label>
+                    <select id="verspaetungsgrund" name="verspaetungsgrund[]">
+                        <option value="">Keine Vorlage</option>
+                        <option value="Keine Verspätungsbegründung">Keine Verspätungsbegründung</option>
+                        <option value="Nähere Informationen in Kürze">Nähere Informationen in Kürze</option>
+                        <option value="Grund: Polizeieinsatz">Grund: Polizeieinsatz</option>
+                        <option value="Grund: Feuerwehreinsatz">Grund: Feuerwehreinsatz</option>
+                        <option value="Grund: Notarzteinsatz">Grund: Notarzteinsatz</option>
+                        <option value="Grund: Behördliche Maßnahme">Grund: Behördliche Maßnahme</option>
+                        <option value="Grund: Ärztliche Versorgung eines Gastes">Grund: Ärztliche Versorgung eines Gastes</option>
+                        <option value="Grund: Unbefugte Personen">Grund: Unbefugte Personen</option>
+                        <option value="Grund: Streik">Grund: Streik</option>
+                        <option value="Grund: Streikauswirkungen">Grund: Streikauswirkungen</option>
+                        <option value="Grund: Erdrutsch">Grund: Erdrutsch</option>
+                        <option value="Grund: Hochwasser">Grund: Hochwasser</option>
+                        <option value="Grund: Unwetter">Grund: Unwetter</option>
+                        <option value="Grund: Unwetterauswirkungen">Grund: Unwetterauswirkungen</option>
+                        <option value="Grund: Technischer Defekt">Grund: Technischer Defekt</option>
+                        <option value="Grund: Beeinträchtigung durch Vandalismus">Grund: Beeinträchtigung durch Vandalismus</option>
+                        <option value="Grund: Entschärfung einer Fliegerbombe">Grund: Entschärfung einer Fliegerbombe</option>
+                        <option value="Grund: Witterungsbedingte Beeinträchtigungen">Grund: Witterungsbedingte Beeinträchtigungen</option>
+                        <option value="Grund: Verspätung">Grund: Verspätung</option>
+                        <option value="Grund: Bereitstellung eines anderen Raumes">Grund: Bereitstellung eines anderen Raumes</option>
+                        <option value="Grund: Verspätete Bereitstellung eines anderen Raumes">Grund: Verspätete Bereitstellung eines anderen Raumes</option>
+                        <option value="Ersatzveranstaltung ist eingerichtet">Ersatzveranstaltung ist eingerichtet</option>
+                        <option value="Grund: Bauarbeiten">Grund: Bauarbeiten</option>
+                        <option value="Grund: Mobilitätseingeschränkte Personen">Grund: Mobilitätseingeschränkte Personen</option>
+                        <option value="Grund: Reparatur an der Einrichtung">Grund: Reparatur an der Einrichtung</option>
+                        <option value="Grund: Raumsperrung">Grund: Raumsperrung</option>
+                        <option value="Grund: Gebäudesperrung">Grund: Gebäudesperrung</option>
+                        <option value="Grund: Technischer Defekt">Grund: Technischer Defekt</option>
+                        <option value="Grund: Verspätung einer vorherigen Veranstaltung">Grund: Verspätung einer vorherigen Veranstaltung</option>
+                        <option value="Grund: Warten auf vorherige Veranstaltung">Grund: Warten auf vorherige Veranstaltung</option>
+                        <option value="Grund: Kurzfristiger Mitarbeiterausfall">Grund: Kurzfristiger Mitarbeiterausfall</option>
+                        <option value="Grund: Kurzfristige Erkrankung von Mitarbeitern">Grund: Kurzfristige Erkrankung von Mitarbeitern</option>
+                        <option value="Grund: Verspätete Mitarbeiter aus vorheriger Veranstaltung">Grund: Verspätete Mitarbeiter aus vorheriger Veranstaltung</option>
+                        <option value="Grund: Verfügbarkeit des Raumes derzeit eingeschränkt">Grund: Verfügbarkeit des Raumes derzeit eingeschränkt</option>
+                        <option value="Grund: Verfügbarkeit der Einrichtung derzeit eingeschränkt">Grund: Verfügbarkeit der Einrichtung derzeit eingeschränkt</option>
+                        <option value="Grund: Verlängerung der Veranstaltung">Grund: Verlängerung der Veranstaltung</option>
+                        <option value="Grund: Verlängerung einer vorherigen Veranstaltung">Grund: Verlängerung einer vorherigen Veranstaltung</option>
+                        <option value="Grund: Schnee und Eis">Grund: Schnee und Eis</option>
+                        <option value="Grund: Defekte Tür">Grund: Defekte Tür</option>
+                        <option value="Grund: Defektes Fenster">Grund: Defektes Fenster</option>
+                        <option value="Grund: Hohes Personenaufkommen">Grund: Hohes Personenaufkommen</option>
+                        <option value="Grund: Veranstaltung verzögert">Grund: Veranstaltung verzögert</option>
+                        <option value="Grund: Veranstaltungsentfall">Grund: Veranstaltungsentfall</option>
+                    </select>
+                    <label for="verspaetungLauftext">Individueller Lauftext:</label>
+                    <textarea id="verspaetungLauftext" name="verspaetungLauftext[]"></textarea>
+                    <button type="button" class="button" onclick="removeVerspaetungDatum(this)">Datum entfernen</button>
+                </div>
+            </div>
+            <button type="button" class="button" onclick="addVerspaetungDatum()">Datum hinzufügen</button>
+            <div>
+                <button type="submit" class="button">Speichern</button>
+                <button type="button" class="button" onclick="removeVerspaetung()">Löschen</button>
+            </div>
+        </form>
+
+        <h2>Bestehende Veranstaltungen</h2>
+        <input type="text" id="search" placeholder="Suche nach Veranstaltungen...">
+        <table id="veranstaltungenTabelle">
+            <thead>
+                <tr>
+                    <th>Titel</th>
+                    <th>Raum</th>
+                    <th>Startzeit</th>
+                    <th>Endzeit</th>
+                    <th>Datum</th>
+                    <th>Wochentag</th>
+                    <th>Zeitraum</th>
+                    <th>Lauftexte</th>
+                    <th>Entfällt</th>
+                    <th>Ausblendung</th>
+                    <th>Verspätungszeit</th>
+                    <th>Verspätungsgrund</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamisch generierte Veranstaltungszeilen -->
+            </tbody>
+        </table>
+    </div>
+    
+    <audio id="announcement-sound" src="https://ttsdemo.voicereader.org/VoiceReaderServer22DemoService/Files/bf92b69b-e879-44f6-96c9-349538d14c4e.mp3"></audio>
+    
+    <script>
+        const veranstaltungen = [
+            { titel: "Gottesdienst", raum: "Gottesdienstsaal", startZeit: "10:20", endeZeit: "12:00", einzelDatum: "2024-07-28", wochentag: "", startDatum: "", endeDatum: "", lauftexte: [], canceled: false, ausblendung: "", verspaetungen: [] },
+            { titel: "Kindergottesdienst", raum: "Gruppenraum 1 / Turnhalle", startZeit: "10:30", endeZeit: "12:00", einzelDatum: "", wochentag: "Sonntag", startDatum: "2024-07-28", endeDatum: "2024-08-20", lauftexte: [{text: "Aufgrund der Sommerferien spontane Veranstaltungsänderungen bzw. Veranstaltungsausfälle möglich! – Infobildschirm beachten!", typ: "negativ", startDatum: "", endeDatum: "2024-08-20"}], canceled: false, ausblendung: "", verspaetungen: [] },
+        ];
+
+        const form = document.getElementById('veranstaltungForm');
+        const tabelle = document.getElementById('veranstaltungenTabelle').getElementsByTagName('tbody')[0];
+        const infoForm = document.getElementById('infoForm');
+        const infoContainer = document.getElementById('infoContainer');
+        const infoTextElement = document.getElementById('infoText');
+        const infoIconElement = document.getElementById('infoIcon');
+        const infoWechselzeitElement = document.getElementById('infoWechselzeit');
+        const infoBox = document.getElementById('info-box');
+        const infoMessage = document.getElementById('info-message');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const iconPreview = document.getElementById('iconPreview');
+        const audioForm = document.getElementById('audioForm');
+        const audioElement = document.getElementById('announcement-sound');
+        const audioUrlElement = document.getElementById('audioUrl');
+        const audioRepeatTimeElement = document.getElementById('audioRepeatTime');
+        const canceledForm = document.getElementById('canceledForm');
+        const canceledVeranstaltungElement = document.getElementById('canceledVeranstaltung');
+        const canceledDatenContainer = document.getElementById('canceledDatenContainer');
+        const canceledVorlageElement = document.getElementById('canceledVorlage');
+        const canceledLauftextElement = document.getElementById('canceledLauftext');
+        const verspaetungForm = document.getElementById('verspaetungForm');
+        const verspaetungVeranstaltungElement = document.getElementById('verspaetungVeranstaltung');
+        const verspaetungDatenContainer = document.getElementById('verspaetungDatenContainer');
+        const searchInput = document.getElementById('search');
+        let audioInterval;
+        let infoInterval;
+
+        function addLauftext() {
+            const container = document.getElementById('lauftextContainer');
+            const entry = document.createElement('div');
+            entry.className = 'lauftextEntry';
+            entry.innerHTML = `
+                <label for="lauftext">Lauftext:</label>
+                <textarea id="lauftext" name="lauftext[]"></textarea>
+                <label for="lauftextTyp">Lauftext-Typ:</label>
+                <select id="lauftextTyp" name="lauftextTyp[]">
+                    <option value="positiv">Positiv</option>
+                    <option value="negativ">Negativ</option>
+                </select>
+                <label for="lauftextStartDatum">Lauftext Start Datum:</label>
+                <input type="date" id="lauftextStartDatum" name="lauftextStartDatum[]">
+                <label for="lauftextEndeDatum">Lauftext Ende Datum:</label>
+                <input type="date" id="lauftextEndeDatum" name="lauftextEndeDatum[]">
+                <button type="button" class="button" onclick="removeLauftext(this)">Lauftext entfernen</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeLauftext(button) {
+            const container = document.getElementById('lauftextContainer');
+            container.removeChild(button.parentElement);
+        }
+
+        function addInfo() {
+            const container = document.getElementById('infoContainer');
+            const entry = document.createElement('div');
+            entry.className = 'infoEntry';
+            entry.innerHTML = `
+                <label for="infoText">Infotext:</label>
+                <textarea id="infoText" name="infoText[]" required></textarea>
+                <label for="infoIcon">Icon:</label>
+                <select id="infoIcon" name="infoIcon[]" required>
+                    <option value="feedback" class="icon-preview"><span class="material-symbols-outlined">feedback</span> Feedback</option>
+                    <option value="info" class="icon-preview"><span class="material-symbols-outlined">info</span> Info</option>
+                    <option value="warning" class="icon-preview"><span class="material-symbols-outlined">warning</span> Warnung</option>
+                    <option value="campaign" class="icon-preview"><span class="material-symbols-outlined">campaign</span> Ankündigung</option>
+                    <option value="error" class="icon-preview"><span class="material-symbols-outlined">error</span> Fehler</option>
+                    <option value="event" class="icon-preview"><span class="material-symbols-outlined">event</span> Ereignis</option>
+                    <option value="help" class="icon-preview"><span class="material-symbols-outlined">help</span> Hilfe</option>
+                    <option value="visibility" class="icon-preview"><span class="material-symbols-outlined">visibility</span> Sichtbarkeit</option>
+                    <option value="check_circle" class="icon-preview"><span class="material-symbols-outlined">check_circle</span> Abgehakt</option>
+                    <option value="announcement" class="icon-preview"><span class="material-symbols-outlined">announcement</span> Ankündigung</option>
+                    <option value="block" class="icon-preview"><span class="material-symbols-outlined">block</span> Blockieren</option>
+                    <option value="notifications" class="icon-preview"><span class="material-symbols-outlined">notifications</span> Benachrichtigungen</option>
+                    <option value="visibility_off" class="icon-preview"><span class="material-symbols-outlined">visibility_off</span> Unsichtbar</option>
+                    <option value="report_problem" class="icon-preview"><span class="material-symbols-outlined">report_problem</span> Problem</option>
+                    <option value="announcement" class="icon-preview"><span class="material-symbols-outlined">announcement</span> Ankündigung</option>
+                    <option value="done" class="icon-preview"><span class="material-symbols-outlined">done</span> Fertig</option>
+                    <option value="event_available" class="icon-preview"><span class="material-symbols-outlined">event_available</span> Verfügbares Ereignis</option>
+                    <option value="event_busy" class="icon-preview"><span class="material-symbols-outlined">event_busy</span> Belegtes Ereignis</option>
+                </select>
+                <span class="material-symbols-outlined" id="iconPreview">feedback</span>
+                <label for="infoWechselzeit">Wechselzeit (Sekunden):</label>
+                <input type="number" id="infoWechselzeit" name="infoWechselzeit[]" value="10" required>
+                <button type="button" class="button" onclick="removeInfo(this)">Infotext entfernen</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeInfo(button) {
+            const container = document.getElementById('infoContainer');
+            container.removeChild(button.parentElement);
+        }
+
+        function addCanceledDatum() {
+            const container = document.getElementById('canceledDatenContainer');
+            const entry = document.createElement('div');
+            entry.className = 'canceledDatumEntry';
+            entry.innerHTML = `
+                <label for="canceledDatum">Datum:</label>
+                <input type="date" id="canceledDatum" name="canceledDatum[]">
+                <button type="button" class="button" onclick="removeCanceledDatum(this)">Datum entfernen</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeCanceledDatum(button) {
+            const container = document.getElementById('canceledDatenContainer');
+            container.removeChild(button.parentElement);
+        }
+
+        function addVerspaetungDatum() {
+            const container = document.getElementById('verspaetungDatenContainer');
+            const entry = document.createElement('div');
+            entry.className = 'verspaetungDatumEntry';
+            entry.innerHTML = `
+                <label for="verspaetungDatum">Datum:</label>
+                <input type="date" id="verspaetungDatum" name="verspaetungDatum[]">
+                <label for="verspaetungszeit">Verspätungszeit (Minuten):</label>
+                <input type="number" id="verspaetungszeit" name="verspaetungszeit[]" value="0">
+                <label for="verspaetungsgrund">Verspätungsgrund:</label>
+                <select id="verspaetungsgrund" name="verspaetungsgrund[]">
+                    <option value="">Keine Vorlage</option>
+                    <option value="Keine Verspätungsbegründung">Keine Verspätungsbegründung</option>
+                    <option value="Nähere Informationen in Kürze">Nähere Informationen in Kürze</option>
+                    <option value="Grund: Polizeieinsatz">Grund: Polizeieinsatz</option>
+                    <option value="Grund: Feuerwehreinsatz">Grund: Feuerwehreinsatz</option>
+                    <option value="Grund: Notarzteinsatz">Grund: Notarzteinsatz</option>
+                    <option value="Grund: Behördliche Maßnahme">Grund: Behördliche Maßnahme</option>
+                    <option value="Grund: Ärztliche Versorgung eines Gastes">Grund: Ärztliche Versorgung eines Gastes</option>
+                    <option value="Grund: Unbefugte Personen">Grund: Unbefugte Personen</option>
+                    <option value="Grund: Streik">Grund: Streik</option>
+                    <option value="Grund: Streikauswirkungen">Grund: Streikauswirkungen</option>
+                    <option value="Grund: Erdrutsch">Grund: Erdrutsch</option>
+                    <option value="Grund: Hochwasser">Grund: Hochwasser</option>
+                    <option value="Grund: Unwetter">Grund: Unwetter</option>
+                    <option value="Grund: Unwetterauswirkungen">Grund: Unwetterauswirkungen</option>
+                    <option value="Grund: Technischer Defekt">Grund: Technischer Defekt</option>
+                    <option value="Grund: Beeinträchtigung durch Vandalismus">Grund: Beeinträchtigung durch Vandalismus</option>
+                    <option value="Grund: Entschärfung einer Fliegerbombe">Grund: Entschärfung einer Fliegerbombe</option>
+                    <option value="Grund: Witterungsbedingte Beeinträchtigungen">Grund: Witterungsbedingte Beeinträchtigungen</option>
+                    <option value="Grund: Verspätung">Grund: Verspätung</option>
+                    <option value="Grund: Bereitstellung eines anderen Raumes">Grund: Bereitstellung eines anderen Raumes</option>
+                    <option value="Grund: Verspätete Bereitstellung eines anderen Raumes">Grund: Verspätete Bereitstellung eines anderen Raumes</option>
+                    <option value="Ersatzveranstaltung ist eingerichtet">Ersatzveranstaltung ist eingerichtet</option>
+                    <option value="Grund: Bauarbeiten">Grund: Bauarbeiten</option>
+                    <option value="Grund: Mobilitätseingeschränkte Personen">Grund: Mobilitätseingeschränkte Personen</option>
+                    <option value="Grund: Reparatur an der Einrichtung">Grund: Reparatur an der Einrichtung</option>
+                    <option value="Grund: Raumsperrung">Grund: Raumsperrung</option>
+                    <option value="Grund: Gebäudesperrung">Grund: Gebäudesperrung</option>
+                    <option value="Grund: Technischer Defekt">Grund: Technischer Defekt</option>
+                    <option value="Grund: Verspätung einer vorherigen Veranstaltung">Grund: Verspätung einer vorherigen Veranstaltung</option>
+                    <option value="Grund: Warten auf vorherige Veranstaltung">Grund: Warten auf vorherige Veranstaltung</option>
+                    <option value="Grund: Kurzfristiger Mitarbeiterausfall">Grund: Kurzfristiger Mitarbeiterausfall</option>
+                    <option value="Grund: Kurzfristige Erkrankung von Mitarbeitern">Grund: Kurzfristige Erkrankung von Mitarbeitern</option>
+                    <option value="Grund: Verspätete Mitarbeiter aus vorheriger Veranstaltung">Grund: Verspätete Mitarbeiter aus vorheriger Veranstaltung</option>
+                    <option value="Grund: Verfügbarkeit des Raumes derzeit eingeschränkt">Grund: Verfügbarkeit des Raumes derzeit eingeschränkt</option>
+                    <option value="Grund: Verfügbarkeit der Einrichtung derzeit eingeschränkt">Grund: Verfügbarkeit der Einrichtung derzeit eingeschränkt</option>
+                    <option value="Grund: Verlängerung der Veranstaltung">Grund: Verlängerung der Veranstaltung</option>
+                    <option value="Grund: Verlängerung einer vorherigen Veranstaltung">Grund: Verlängerung einer vorherigen Veranstaltung</option>
+                    <option value="Grund: Schnee und Eis">Grund: Schnee und Eis</option>
+                    <option value="Grund: Defekte Tür">Grund: Defekte Tür</option>
+                    <option value="Grund: Defektes Fenster">Grund: Defektes Fenster</option>
+                    <option value="Grund: Hohes Personenaufkommen">Grund: Hohes Personenaufkommen</option>
+                    <option value="Grund: Veranstaltung verzögert">Grund: Veranstaltung verzögert</option>
+                    <option value="Grund: Veranstaltungsentfall">Grund: Veranstaltungsentfall</option>
+                </select>
+                <label for="verspaetungLauftext">Individueller Lauftext:</label>
+                <textarea id="verspaetungLauftext" name="verspaetungLauftext[]"></textarea>
+                <button type="button" class="button" onclick="removeVerspaetungDatum(this)">Datum entfernen</button>
+            `;
+            container.appendChild(entry);
+        }
+
+        function removeVerspaetungDatum(button) {
+            const container = document.getElementById('verspaetungDatenContainer');
+            container.removeChild(button.parentElement);
+        }
+
+        function showVorlageText() {
+            const vorlage = canceledVorlageElement.value;
+            const vorlageTextElement = document.getElementById('vorlageText');
+            vorlageTextElement.textContent = vorlage;
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const neueVeranstaltung = {
+                titel: formData.get('titel'),
+                raum: formData.get('raum'),
+                startZeit: formData.get('startZeit'),
+                endeZeit: formData.get('endeZeit'),
+                einzelDatum: formData.get('einzelDatum'),
+                wochentag: formData.get('wochentag'),
+                startDatum: formData.get('startDatum'),
+                endeDatum: formData.get('endeDatum'),
+                lauftexte: [],
+                canceled: formData.get('canceled') === "on",
+                ausblendung: formData.get('ausblendung'),
+                verspaetungen: []
+            };
+            const lauftexte = formData.getAll('lauftext[]');
+            const lauftextTypen = formData.getAll('lauftextTyp[]');
+            const lauftextStartDaten = formData.getAll('lauftextStartDatum[]');
+            const lauftextEndeDaten = formData.getAll('lauftextEndeDatum[]');
+
+            for (let i = 0; i < lauftexte.length; i++) {
+                neueVeranstaltung.lauftexte.push({
+                    text: lauftexte[i],
+                    typ: lauftextTypen[i],
+                    startDatum: lauftextStartDaten[i],
+                    endeDatum: lauftextEndeDaten[i]
+                });
+            }
+
+            if (neueVeranstaltung.einzelDatum) {
+                veranstaltungen.push({ ...neueVeranstaltung, datum: neueVeranstaltung.einzelDatum });
+            } else if (neueVeranstaltung.wochentag) {
+                const startDatum = new Date(neueVeranstaltung.startDatum);
+                const endDatum = new Date(neueVeranstaltung.endeDatum);
+                let currentDatum = startDatum;
+
+                while (currentDatum <= endDatum) {
+                    if (currentDatum.getDay() === getWeekdayIndex(neueVeranstaltung.wochentag)) {
+                        veranstaltungen.push({ ...neueVeranstaltung, datum: currentDatum.toISOString().split('T')[0] });
+                    }
+                    currentDatum.setDate(currentDatum.getDate() + 1);
+                }
+            } else if (neueVeranstaltung.startDatum && neueVeranstaltung.endeDatum) {
+                const startDatum = new Date(neueVeranstaltung.startDatum);
+                const endDatum = new Date(neueVeranstaltung.endeDatum);
+                let currentDatum = startDatum;
+
+                while (currentDatum <= endDatum) {
+                    veranstaltungen.push({ ...neueVeranstaltung, datum: currentDatum.toISOString().split('T')[0] });
+                    currentDatum.setDate(currentDatum.getDate() + 1);
+                }
+            }
+
+            form.reset();
+            tabelleRendern();
+            updateCanceledVeranstaltungen();
+            updateVerspaetungVeranstaltungen();
+        });
+
+        infoForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const infoTexts = infoForm.querySelectorAll('textarea[name="infoText[]"]');
+            const infoIcons = infoForm.querySelectorAll('select[name="infoIcon[]"]');
+            const infoWechselzeiten = infoForm.querySelectorAll('input[name="infoWechselzeit[]"]');
+            clearInterval(infoInterval);
+            let infoIndex = 0;
+
+            function updateInfo() {
+                if (infoIndex >= infoTexts.length) {
+                    infoIndex = 0;
+                }
+                infoMessage.textContent = infoTexts[infoIndex].value;
+                feedbackIcon.textContent = infoIcons[infoIndex].value;
+                iconPreview.textContent = infoIcons[infoIndex].value;
+                const wechselzeit = parseInt(infoWechselzeiten[infoIndex].value, 10) * 1000;
+                clearInterval(infoInterval);
+                infoInterval = setInterval(updateInfo, wechselzeit);
+                infoIndex++;
+            }
+
+            updateInfo();
+        });
+
+        audioForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            audioElement.src = audioUrlElement.value;
+            clearInterval(audioInterval);
+            audioInterval = setInterval(() => {
+                audioElement.play();
+                infoBox.classList.add('audio-playing');
+                audioElement.addEventListener('ended', () => {
+                    infoBox.classList.remove('audio-playing');
+                });
+            }, audioRepeatTimeElement.value * 1000);
+        });
+
+        infoIconElement.addEventListener('change', function() {
+            iconPreview.textContent = infoIconElement.value;
+        });
+
+        canceledForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(canceledForm);
+            const canceledVeranstaltungen = formData.getAll('canceledVeranstaltung[]');
+            const canceledDaten = formData.getAll('canceledDatum[]');
+            const canceledVorlage = formData.get('canceledVorlage');
+            const canceledLauftext = formData.get('canceledLauftext') || canceledVorlage;
+
+            canceledVeranstaltungen.forEach(titel => {
+                veranstaltungen.filter(v => v.titel === titel).forEach(veranstaltung => {
+                    veranstaltung.canceled = true;
+                    veranstaltung.canceledDaten = canceledDaten;
+                    veranstaltung.canceledLauftext = canceledLauftext;
+                });
+            });
+
+            tabelleRendern();
+        });
+
+        verspaetungForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(verspaetungForm);
+            const verspaetungVeranstaltungen = formData.getAll('verspaetungVeranstaltung[]');
+            const verspaetungDaten = formData.getAll('verspaetungDatum[]');
+            const verspaetungszeiten = formData.getAll('verspaetungszeit[]');
+            const verspaetungsgruende = formData.getAll('verspaetungsgrund[]');
+            const verspaetungLauftexte = formData.getAll('verspaetungLauftext[]');
+
+            verspaetungVeranstaltungen.forEach(titel => {
+                veranstaltungen.filter(v => v.titel === titel).forEach(veranstaltung => {
+                    verspaetungDaten.forEach((datum, index) => {
+                        veranstaltung.verspaetungen.push({
+                            datum,
+                            zeit: verspaetungszeiten[index],
+                            grund: verspaetungsgruende[index],
+                            lauftext: verspaetungLauftexte[index]
+                        });
+                    });
+                });
+            });
+
+            tabelleRendern();
+        });
+
+        function removeCanceled() {
+            const formData = new FormData(canceledForm);
+            const canceledVeranstaltungen = formData.getAll('canceledVeranstaltung[]');
+            canceledVeranstaltungen.forEach(titel => {
+                veranstaltungen.filter(v => v.titel === titel).forEach(veranstaltung => {
+                    veranstaltung.canceled = false;
+                    veranstaltung.canceledDaten = [];
+                    veranstaltung.canceledLauftext = '';
+                });
+            });
+
+            tabelleRendern();
+        }
+
+        function removeVerspaetung() {
+            const formData = new FormData(verspaetungForm);
+            const verspaetungVeranstaltungen = formData.getAll('verspaetungVeranstaltung[]');
+            verspaetungVeranstaltungen.forEach(titel => {
+                veranstaltungen.filter(v => v.titel === titel).forEach(veranstaltung => {
+                    veranstaltung.verspaetungen = [];
+                });
+            });
+
+            tabelleRendern();
+        }
+
+        function tabelleRendern() {
+            tabelle.innerHTML = '';
+            veranstaltungen.forEach((veranstaltung, index) => {
+                const lauftextListe = veranstaltung.lauftexte.map(lauftext => `
+                    <div>
+                        <span>${lauftext.text}</span><br>
+                        <span>Typ: ${lauftext.typ}</span><br>
+                        <span>Start: ${lauftext.startDatum}</span><br>
+                        <span>Ende: ${lauftext.endeDatum}</span>
+                    </div>
+                `).join('<br>');
+                const canceledText = veranstaltung.canceled ? `Ja (${veranstaltung.canceledDaten.join(', ')} - ${veranstaltung.canceledLauftext})` : 'Nein';
+                const verspaetungListe = veranstaltung.verspaetungen.map(verspaetung => `
+                    <div>
+                        <span>${verspaetung.zeit} Minuten</span><br>
+                        <span>Datum: ${verspaetung.datum}</span><br>
+                        <span>Grund: ${verspaetung.grund}</span><br>
+                        <span>Lauftext: ${verspaetung.lauftext}</span>
+                    </div>
+                `).join('<br>');
+                const zeile = tabelle.insertRow();
+                zeile.innerHTML = `
+                    <td class="${veranstaltung.canceled ? 'canceled' : ''}">${veranstaltung.titel}</td>
+                    <td>${veranstaltung.raum}</td>
+                    <td>${veranstaltung.startZeit}</td>
+                    <td>${veranstaltung.endeZeit}</td>
+                    <td>${veranstaltung.datum}</td>
+                    <td>${veranstaltung.wochentag || ''}</td>
+                    <td>${veranstaltung.startDatum ? `${veranstaltung.startDatum} - ${veranstaltung.endeDatum}` : ''}</td>
+                    <td>${lauftextListe}</td>
+                    <td>${canceledText}</td>
+                    <td>${veranstaltung.ausblendung || ''}</td>
+                    <td>${verspaetungListe}</td>
+                    <td>
+                        <button class="button" onclick="bearbeiten(${index})">Bearbeiten</button>
+                        <button class="button" onclick="loeschen(${index})">Löschen</button>
+                    </td>
+                `;
+            });
+        }
+
+        function bearbeiten(index) {
+            const veranstaltung = veranstaltungen[index];
+            document.getElementById('titel').value = veranstaltung.titel;
+            document.getElementById('raum').value = veranstaltung.raum;
+            document.getElementById('startZeit').value = veranstaltung.startZeit;
+            document.getElementById('endeZeit').value = veranstaltung.endeZeit;
+            document.getElementById('einzelDatum').value = veranstaltung.einzelDatum;
+            document.getElementById('wochentag').value = veranstaltung.wochentag;
+            document.getElementById('startDatum').value = veranstaltung.startDatum;
+            document.getElementById('endeDatum').value = veranstaltung.endeDatum;
+            document.getElementById('canceled').checked = veranstaltung.canceled;
+            document.getElementById('ausblendung').value = veranstaltung.ausblendung;
+
+            const lauftextContainer = document.getElementById('lauftextContainer');
+            lauftextContainer.innerHTML = '';
+            veranstaltung.lauftexte.forEach(lauftext => {
+                const entry = document.createElement('div');
+                entry.className = 'lauftextEntry';
+                entry.innerHTML = `
+                    <label for="lauftext">Lauftext:</label>
+                    <textarea id="lauftext" name="lauftext[]">${lauftext.text}</textarea>
+                    <label for="lauftextTyp">Lauftext-Typ:</label>
+                    <select id="lauftextTyp" name="lauftextTyp[]">
+                        <option value="positiv" ${lauftext.typ === 'positiv' ? 'selected' : ''}>Positiv</option>
+                        <option value="negativ" ${lauftext.typ === 'negativ' ? 'selected' : ''}>Negativ</option>
+                    </select>
+                    <label for="lauftextStartDatum">Lauftext Start Datum:</label>
+                    <input type="date" id="lauftextStartDatum" name="lauftextStartDatum[]" value="${lauftext.startDatum}">
+                    <label for="lauftextEndeDatum">Lauftext Ende Datum:</label>
+                    <input type="date" id="lauftextEndeDatum" name="lauftextEndeDatum[]" value="${lauftext.endeDatum}">
+                    <button type="button" class="button" onclick="removeLauftext(this)">Lauftext entfernen</button>
+                `;
+                lauftextContainer.appendChild(entry);
+            });
+
+            veranstaltungen.splice(index, 1);
+            tabelleRendern();
+            updateCanceledVeranstaltungen();
+            updateVerspaetungVeranstaltungen();
+        }
+
+        function loeschen(index) {
+            veranstaltungen.splice(index, 1);
+            tabelleRendern();
+            updateCanceledVeranstaltungen();
+            updateVerspaetungVeranstaltungen();
+        }
+
+        function updateCanceledVeranstaltungen() {
+            canceledVeranstaltungElement.innerHTML = '';
+            veranstaltungen.forEach(veranstaltung => {
+                const option = document.createElement('option');
+                option.value = veranstaltung.titel;
+                option.textContent = veranstaltung.titel;
+                canceledVeranstaltungElement.appendChild(option);
+            });
+        }
+
+        function updateVerspaetungVeranstaltungen() {
+            verspaetungVeranstaltungElement.innerHTML = '';
+            veranstaltungen.forEach(veranstaltung => {
+                const option = document.createElement('option');
+                option.value = veranstaltung.titel;
+                option.textContent = veranstaltung.titel;
+                verspaetungVeranstaltungElement.appendChild(option);
+            });
+        }
+
+        function getWeekdayIndex(wochentag) {
+            switch (wochentag) {
+                case 'Sonntag': return 0;
+                case 'Montag': return 1;
+                case 'Dienstag': return 2;
+                case 'Mittwoch': return 3;
+                case 'Donnerstag': return 4;
+                case 'Freitag': return 5;
+                case 'Samstag': return 6;
+                default: return -1;
+            }
+        }
+
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase();
+            const rows = tabelle.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let match = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerText.toLowerCase().includes(query)) {
+                        match = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = match ? '' : 'none';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            tabelleRendern();
+            updateCanceledVeranstaltungen();
+            updateVerspaetungVeranstaltungen();
+            audioInterval = setInterval(() => {
+                audioElement.play();
+            }, audioRepeatTimeElement.value * 1000);
+        });
+    </script>
+</body>
+</html>
